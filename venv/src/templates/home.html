@@ -17,14 +17,18 @@
                 </button>
             </div>
             <div class="card-body">
-                    <h1 style="font-size: 75px">{{object}}</h1>
+                    <h1 style="font-size: 75px">{{request.session.word}}</h1>
             </div>
         </div>
         <div class="col-md text-center">
             {% load static %}
-            <button class="boom" style="background:transparent; border:none">
-                <img class="btn-word" src="{% static 'css/assets/button.png' %}" class="img-fluid" alt="Button">
-            </button>
+            <form method="POST", action="">
+                {% csrf_token %}
+                <button class="boom" style="background:transparent; border:none">
+                    <img class="btn-word" src="{% static 'css/assets/button.png' %}" class="img-fluid" alt="Button">
+                </button>
+            </form>
+            
             
         </div>
     </div>
