@@ -13,6 +13,7 @@ def home_view(request, context={}):
     
     if request.method == 'POST':
         set_word_variable(request)
+
         return redirect('home')
     
     return render(request, "home.html", context)
@@ -60,3 +61,9 @@ def words_detail_view(request):
         return redirect('wordgame')
     
     return render(request, 'wordgame.html', {})
+
+def wheel_view(request):
+    if not request.user.is_authenticated or request.user.is_anonymous:
+        return redirect('login')
+    
+    return render(request, 'wheel.html', {})
