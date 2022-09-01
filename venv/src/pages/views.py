@@ -3,17 +3,27 @@ from django.http import HttpResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from wordgame.models import Wordgame
+# Import ButtonPressed model
+from wordgame.models import ButtonPressed
 import random
+import time
+import json
 # Create your views here.
 def home_view(request, context={}):
-    print(request.user)
 
     if not request.user.is_authenticated or request.user.is_anonymous:
         return redirect('login')
     
     if request.method == 'POST':
         set_word_variable(request)
-
+        user = request.user
+        userid = user.id
+        csrf = request.COOKIES['csrftoken']
+        print("user is " + user.username)
+        print("userid is " + str(userid))
+        print("csrf is " + csrf)
+        item = ButtonPressed.objects.create(user=str(user), csrf=csrf)
+        item.save()
         return redirect('home')
     
     return render(request, "home.html", context)
@@ -65,5 +75,29 @@ def words_detail_view(request):
 def wheel_view(request):
     if not request.user.is_authenticated or request.user.is_anonymous:
         return redirect('login')
-    
+    print(request.META)
     return render(request, 'wheel.html', {})
+
+def channel_message(self, event):
+    message = event['message']
+    self.send(text_data=json.dumps({
+        'message': message
+    }))
+
+def send_wheel_spin(userid, csrf):
+    url = "http://localhost:8000/wheel/spin"
+    data = {
+        'userid': userid,
+        'csrfmiddlewaretoken': csrf
+    }
+    response = requests.post(url, data=data)
+    print(response.text)
+    return response.text
+
+def test_view(request):
+    
+    try:
+        count = len(ButtonPressed.objects.all())
+    except ButtonPressed.DoesNotExist:
+        count = 0
+    return HttpResponse(count)
