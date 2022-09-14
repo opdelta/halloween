@@ -2,15 +2,14 @@ version: "3.3"
 
 services:
   db:
-    image: postgres:12
-    restart: always
-    environment:
-      POSTGRES_DB=postgres
-      POSTGRES_USER=postgres
-      POSTGRES_PASSWORD=postgres
+    image: postgres
     volumes:
-      - db_data:/var/lib/postgresql/data
-  web:
+      - ./data/db:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+web:
     build: .
     command: python manage.py runserver 0.0.0.0:8080
     volumes:
@@ -18,8 +17,8 @@ services:
     ports:
       - "8080:8080"
     environment:
-      POSTGRES_NAME=postgres
-      POSTGRES_USER=postgres
-      POSTGRES_PASSWORD=postgres
+      - POSTGRES_NAME=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     depends_on:
       - db
